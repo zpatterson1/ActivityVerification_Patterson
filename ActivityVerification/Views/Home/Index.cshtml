@@ -1,0 +1,122 @@
+﻿@using PagedList;
+@using PagedList.Mvc;
+@model IPagedList<ActivityVerification.Models.Activity>
+
+@{
+    ViewBag.Title = "Activities";
+}
+
+@section Scripts{
+    @Scripts.Render("~/Scripts/modal_cust.js")
+}
+
+<div class="row">
+    <br />
+    <div class="row">
+        <div class="searchBar" style="float:right">
+            @using (Html.BeginForm("Index", "Home", FormMethod.Get))
+            {
+                //the following are search options
+                @Html.TextBox("search", null, new { @class = "search", @id = "searchBox", placeholder = "Search" }) <input type="submit" name="submit" value="Search" />
+
+            }
+        </div>
+    </div>
+
+    <div class="row">
+        <p style="float:right;">*search by activity name or description</p>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-12">
+        <div class="container" style="max-width:75%; margin:0 auto">
+
+            <h2>Activities</h2>
+            <table class="table table-hover table-responsive table-striped boxedTable">
+                @if (Model.Count() == 0)
+                {
+                    <tr>
+                        <td colspan="2"> No activities found. Try changing search or adding a new activity. </td>
+                    </tr>
+                }
+                else
+                {
+                    <tr>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Name)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().ActivityType.Type):
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Description)
+                        </th>
+                        <th>
+                            @Html.DisplayNameFor(model => model.FirstOrDefault().Verified)
+                        </th>
+                        <th></th>
+                    </tr>
+
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.ActivityType.Type)
+                            </td>
+                            <td>
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td>
+                                @if (item.Verified)
+                                {
+                                    <span class="glyphicon glyphicon-ok text-success"></span>
+                                }
+                            </td>
+                            <td>
+                                @*@Html.ActionLink("Edit", "Edit", new { id = item.Id })*@
+                                <a href="@Url.Action("Edit", "Home",new {id=item.Id})" class="text-info" title="Edit" style="margin-right:5px;">
+                                    <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
+                                </a>
+                                <a href="javascript:void(0);" class="detailsItem" title="View" data-id="@item.Id">
+                                    <span class="glyphicon glyphicon-eye-open"></span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </table>
+            <div class="row">
+                <div class="col-md-2 pull-left">
+                    <a href="@Url.Action("Create", "Home")" class="btn btn-success">
+                        <span class="glyphicon glyphicon-plus" aria-hidden="true"></span> Add
+                    </a>
+                </div>
+
+                <div class="col-md-2 pull-right">
+                    Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+                    @Html.PagedListPager(Model, pageNumber => Url.Action("Index",
+                                                                  new { sortOrder = ViewBag.CurrentSort, currentFilter = ViewBag.CurrentFilter, pageNumber }))
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+
+
+<div id='myModal' class='modal fade'>
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div id='myModalContent'>
+            </div>
+        </div>
+    </div>
+</div>
